@@ -4,12 +4,12 @@ import time
 import requests
 from pathlib import Path
 
-# Настройки для Spotify API
-CLIENT_ID = '99405a951db947109fcde43a8474f986'  # Замени на свой Client ID
-CLIENT_SECRET = '4e818d43c0714b06a9475bd241bdb985'  # Замени на свой Client Secret
-REDIRECT_URI = 'http://127.0.0.1:8080'  # Или другой Redirect URI, который ты указал
+# Settings for Spotify API
+CLIENT_ID = '1111'  # Replace with your Client ID
+CLIENT_SECRET = '1111'  # Replace with your Client Secret
+REDIRECT_URI = 'http://127.0.0.1:8080'  # Or the other Redirect URI you specified
 
-# Настройка аутентификации
+# Authentication settings
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
@@ -17,23 +17,23 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
 
 def get_current_track():
     try:
-        # Получаем информацию о текущем треке
+      # Get information about the current track
         current_track = sp.current_user_playing_track()
         if current_track is None:
             return "Нет активного трека", None
 
         track_name = current_track['item']['name']
         artist_name = current_track['item']['artists'][0]['name']
-        # Получаем URL обложки
+        # Get the URL of the cover
         image_url = current_track['item']['album']['images'][0]['url'] if current_track['item']['album']['images'] else None
 
-        # Форматируем название трека для прокрутки
+        # Format the track name for scrolling
         full_text = f"{track_name} - {artist_name}"
-        MAX_LENGTH = 50  # Максимальная длина текста перед прокруткой
+        MAX_LENGTH = 50  # Maximum length of text before scrolling
 
         if len(full_text) > MAX_LENGTH:
-            # Создаем эффект бегущей строки, добавляя пробелы в начале и конце
-            padding = " " * 10  # Добавляем отступы для плавности
+            # Create a running line effect by adding spaces at the beginning and end of the line
+            padding = " " * 10  # Add indents for smoothness
             scrolling_text = padding + full_text + padding
             formatted_text = scrolling_text
         else:
@@ -53,33 +53,33 @@ def download_image(image_url, filename='current_album_cover.jpg'):
                 file.write(response.content)
             return True
         except Exception as e:
-            print(f"Ошибка при скачивании изображения: {str(e)}")
+            print(f"Error downloading the image: {str(e)}")
             return False
     return False
 
 def update_obs_file():
     while True:
-        # Получаем текущий трек и URL обложки
+        # Get the current track and the cover URL
         track_info, image_url = get_current_track()
         
-        # Записываем название трека в текстовый файл
+        # Write the track name to a text file
         with open('current_song.txt', 'w', encoding='utf-8') as file:
             file.write(track_info)
         
-        # Скачиваем и сохраняем обложку, если она есть
+        # Download and save the cover art if you have it
         if image_url:
             success = download_image(image_url)
             if success:
-                print(f"Обложка обновлена: {image_url}")
+                print(f"The cover has been updated: {image_url}")
             else:
-                print("Не удалось обновить обложку.")
+                print("Failed to update the cover.")
         else:
-            print("Обложка не найдена для текущего трека.")
+            print("No cover artwork found for the current track.")
         
-        print(f"Обновлено: {track_info}")
-        # Обновляем каждые 5 секунд
+        print(f"Updated: {track_info}")
+        # Refresh every 5 seconds
         time.sleep(5)
 
 if __name__ == "__main__":
-    print("Программа запущена. Авторизуйся в Spotify, если потребуется.")
+    print("The program is up and running. Authorize to Spotify if required.")
     update_obs_file()
