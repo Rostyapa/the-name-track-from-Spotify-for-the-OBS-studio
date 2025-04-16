@@ -20,7 +20,7 @@ def get_current_track():
       # Get information about the current track
         current_track = sp.current_user_playing_track()
         if current_track is None:
-            return "Нет активного трека", None
+            return "No active track", None
 
         track_name = current_track['item']['name']
         artist_name = current_track['item']['artists'][0]['name']
@@ -42,7 +42,7 @@ def get_current_track():
         return formatted_text, image_url
 
     except Exception as e:
-        return f"Ошибка: {str(e)}", None
+        return f"Erorr: {str(e)}", None
 
 def download_image(image_url, filename='current_album_cover.jpg'):
     if image_url:
